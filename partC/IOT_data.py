@@ -5,21 +5,18 @@ import numpy as np
 def get_ds_infos():
     """
     Read the file includes data subject information.
-    
     Data Columns:
     0: code [1-24]
     1: weight [kg]
     2: height [cm]
     3: age [years]
     4: gender [0:Female, 1:Male]
-    
     Returns:
         A pandas DataFrame that contains inforamtion about data subjects' attributes 
     """ 
 
-    dss = pd.read_csv("data_subjects_info.csv")
+    dss = pd.read_csv("subject.csv")
     print("[INFO] -- Data subjects' information is imported.")
-    
     return dss
 
 def set_data_types(data_types=["userAcceleration"]):
@@ -130,12 +127,17 @@ print("[INFO] -- Shape of time-Series dataset:"+str(dataset.shape))
 dataset.head()
 
 #%%
-id_df = dataset[dataset.loc[:,"id"] == 24]
-id_df.info()
-id_df = id_df.drop(columns=['trial'])
-id_df.info()
-id_df.to_csv("24.csv")
+for i in range(24):
+    id_df = dataset[dataset.loc[:,"id"] == i]
+    id_df.info()
+    id_df = id_df.drop(columns=['trial'])
+    id_df.info()
+    id_df.to_csv(str(i) + ".csv")
 # %%
+
+
+
+#%%
 df = pd.read_csv("0.csv")
 df.info()
 window = df.rolling(on = 'index',window = 300,min_periods = 300).mean()
