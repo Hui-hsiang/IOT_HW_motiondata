@@ -206,6 +206,29 @@ X_train.head()
 y_train.head()
 
 # %%
+def ANN_model():
+    # Using Relu activation, and Adam optimizer, 100 epochs
+    model = Sequential()
+
+    model.add(Dense(32,input_dim=3,activation='relu',kernel_initializer='uniform'))
+
+    model.add(Dropout(0.2))
+    model.add(Dense(16,activation='relu'))
+    model.add(Dropout(0.2))
+
+    model.add(Dense(3,activation='softmax'))
+    # Compile model
+    model.compile(Adam(lr=.0001),loss = 'categorical_crossentropy', metrics=['accuracy'])
+    return model
+
+# Make it as sklearn model
+model = KerasClassifier(build_fn=ANN_model,epochs= 100, batch_size=128,verbose=1)
+# Train model
+model.fit(X_train, y_train)
+y_test_predicted = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_test_predicted)
+print('training 準確率:',accuracy)
+#%%
 model = KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
                      metric_params=None, n_jobs=None, n_neighbors=5, p=2,
                      weights='uniform')
