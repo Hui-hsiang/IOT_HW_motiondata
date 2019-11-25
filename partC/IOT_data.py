@@ -136,12 +136,85 @@ id_df = id_df.drop(columns=['trial'])
 id_df.info()
 id_df.to_csv("24.csv")
 # %%
-
+df = pd.read_csv("0.csv")
+df.info()
+window = df.rolling(on = 'index',window = 300,min_periods = 300).mean()
+window = window.drop(columns = 'index')
+window.info()
+window.head()
+window = window.dropna()
+window.head()
+# %%
+for i in range(1,24):
+    df = pd.read_csv(str(i) + ".csv")
+    w = df.rolling(on = 'index',window = 300,min_periods = 300).mean()
+    w = w.drop(columns = 'index')
+    w = w.dropna()
+    window = window.append(w)
+    print("append" + str(i))
+print ("finish")
+# %%
+window.info()
+window.dropna()
+window.info()
+# %%
+import numpy as np
+import pandas as pd
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import confusion_matrix 
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier 
+from sklearn.metrics import accuracy_score 
+from sklearn.metrics import classification_report 
+from sklearn.preprocessing  import StandardScaler
+from sklearn import preprocessing
+import nltk
+from keras.models import Sequential
+from keras.layers import Dense
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn import preprocessing
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.neighbors import KNeighborsClassifier
+# %%
+columns_name = window.columns
+print (columns_name)
 
 # %%
+df = window[['attitude.roll', 'attitude.pitch', 'attitude.yaw', 'userAcceleration.x',
+       'userAcceleration.y', 'userAcceleration.z', 'weight',
+       'height', 'age', 'gender','act']]
+df.head()
+df.info()
+df.dropna()
 
+x = df.iloc[:,0:10]
+y = df['act']
+y = y.astype('int')
 
 # %%
+X_train , X_test , y_train , y_test = train_test_split(x,y,test_size=0.3,random_state=1010)
 
+print (X_train.shape)
+print (X_test.shape)
+print (y_train.shape)
+print (y_test.shape)
+
+X_train.head()
+y_train.head()
+
+# %%
+model = KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+                     metric_params=None, n_jobs=None, n_neighbors=5, p=2,
+                     weights='uniform')
+
+history = model.fit(X_train, y_train)
+
+
+
+y_test_predicted = model.predict(X_test)
+
+accuracy = accuracy_score(y_test, y_test_predicted)
+print('training 準確率:',accuracy)
 
 # %%
