@@ -138,7 +138,7 @@ for i in range(24):
 
 
 #%%
-df = pd.read_csv("0.csv")
+df = pd.read_csv("./csv/0.csv")
 df.info()
 window = df.rolling(on = 'index',window = 300,min_periods = 300).mean()
 window = window.drop(columns = 'index')
@@ -147,14 +147,32 @@ window.head()
 window = window.dropna()
 window.head()
 # %%
-for i in range(1,24):
-    df = pd.read_csv(str(i) + ".csv")
+for i in range(1,20):
+    df = pd.read_csv('./csv/' + str(i) + ".csv")
     w = df.rolling(on = 'index',window = 300,min_periods = 300).mean()
     w = w.drop(columns = 'index')
     w = w.dropna()
     window = window.append(w)
     print("append" + str(i))
 print ("finish")
+#%%
+df = pd.read_csv("./csv/20.csv")
+df.info()
+testwindow = df.rolling(on = 'index',window = 300,min_periods = 300).mean()
+testwindow = testwindow.drop(columns = 'index')
+testwindow.info()
+testwindow.head()
+testwindow = testwindow.dropna()
+testwindow.head()
+for i in range(21,24):
+    df = pd.read_csv('./csv/' + str(i) + ".csv")
+    w = df.rolling(on = 'index',window = 300,min_periods = 300).mean()
+    w = w.drop(columns = 'index')
+    w = w.dropna()
+    testwindow = testwindow.append(w)
+    print("append" + str(i))
+print ("finish")
+
 # %%
 window.info()
 window.dropna()
@@ -173,7 +191,6 @@ from sklearn import preprocessing
 import nltk
 from keras.models import Sequential
 from keras.layers import Dense
-import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn import preprocessing
 from sklearn.preprocessing import MinMaxScaler
@@ -197,6 +214,16 @@ df.dropna()
 x = df.iloc[:,0:10]
 y = df['act']
 y = y.astype('int')
+
+df = testwindow[['attitude.roll', 'attitude.pitch', 'attitude.yaw', 'userAcceleration.x',
+       'userAcceleration.y', 'userAcceleration.z', 'weight',
+       'height', 'age', 'gender','act']]
+df.dropna()
+
+tx = df.iloc[:,0:10]
+ty = df['act']
+ty = ty.astype('int')
+
 
 # %%
 X_train , X_test , y_train , y_test = train_test_split(x,y,test_size=0.3,random_state=1010)
@@ -228,9 +255,12 @@ def ANN_model():
 # Make it as sklearn model
 model = KerasClassifier(build_fn=ANN_model,epochs= 100, batch_size=1600,verbose=1)
 # Train model
-model.fit(X_train, y_train)
-y_test_predicted = model.predict(X_test)
-accuracy = accuracy_score(y_test, y_test_predicted)
+model.fit(x, y)
+
+y_test_predicted = model.predict(tx)
+
+
+accuracy = accuracy_score(ty, y_test_predicted)
 print('training 準確率:',accuracy)
 #%%
 model = KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
@@ -238,11 +268,7 @@ model = KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
                      weights='uniform')
 
 history = model.fit(X_train, y_train)
-
-
-
 y_test_predicted = model.predict(X_test)
-
 accuracy = accuracy_score(y_test, y_test_predicted)
 print('training 準確率:',accuracy)
 
