@@ -178,6 +178,10 @@ import pandas as pd
 from sklearn import preprocessing
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.neighbors import KNeighborsClassifier
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
+from keras.optimizers import Adam
+from keras.wrappers.scikit_learn import KerasClassifier
 # %%
 columns_name = window.columns
 print (columns_name)
@@ -210,19 +214,19 @@ def ANN_model():
     # Using Relu activation, and Adam optimizer, 100 epochs
     model = Sequential()
 
-    model.add(Dense(32,input_dim=3,activation='relu',kernel_initializer='uniform'))
+    model.add(Dense(32,input_dim=10,activation='relu',kernel_initializer='uniform'))
 
     model.add(Dropout(0.2))
     model.add(Dense(16,activation='relu'))
     model.add(Dropout(0.2))
 
-    model.add(Dense(3,activation='softmax'))
+    model.add(Dense(6,activation='softmax'))
     # Compile model
     model.compile(Adam(lr=.0001),loss = 'categorical_crossentropy', metrics=['accuracy'])
     return model
 
 # Make it as sklearn model
-model = KerasClassifier(build_fn=ANN_model,epochs= 100, batch_size=128,verbose=1)
+model = KerasClassifier(build_fn=ANN_model,epochs= 100, batch_size=1600,verbose=1)
 # Train model
 model.fit(X_train, y_train)
 y_test_predicted = model.predict(X_test)
